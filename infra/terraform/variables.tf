@@ -51,13 +51,13 @@ variable "github_repo" {
 variable "bedrock_model_id" {
   description = "Bedrock model for agents"
   type        = string
-  default     = "anthropic.claude-sonnet-4-5-20250929-v1:0"
+  default     = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 }
 
 variable "bedrock_haiku_model_id" {
   description = "Bedrock model for orchestrator (cheap)"
   type        = string
-  default     = "anthropic.claude-haiku-4-5-20250929-v1:0"
+  default     = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
 }
 
 variable "embedding_dimensions" {

@@ -25,6 +25,8 @@ locals {
           "FunctionName" = var.lambda_arns["orchestrator"]
           "Payload.$"    = "$"
         }
+
+          OutputPath = "$.Payload"
         Retry = [{
           ErrorEquals    = ["States.TaskFailed"]
           IntervalSeconds = 1
@@ -41,19 +43,22 @@ locals {
       Dispatch = {
         Type = "Choice"
         Choices = [
-          { Variable = "$.intent", StringEquals = "sales",   Next = "SalesAgent" },
-          { Variable = "$.intent", StringEquals = "support", Next = "SupportAgent" },
-          { Variable = "$.intent", StringEquals = "returns", Next = "ReturnsAgent" }
+          { Variable = "$.intent", StringEquals = "triage",    Next = "TriageAgent" },
+          { Variable = "$.intent", StringEquals = "historian", Next = "HistorianAgent" },
+          { Variable = "$.intent", StringEquals = "scribe",    Next = "ScribeAgent" },
+          { Variable = "$.intent", StringEquals = "priorauth", Next = "PriorAuthAgent" }
         ]
         Default = "Failed"
       }
-      SalesAgent = {
+      TriageAgent = {
         Type     = "Task"
         Resource = "arn:aws:states:::lambda:invoke"
         Parameters = {
-          "FunctionName" = var.lambda_arns["sales"]
+          "FunctionName" = var.lambda_arns["triage"]
           "Payload.$"    = "$"
         }
+
+          OutputPath = "$.Payload"
         Retry = [{
           ErrorEquals    = ["States.TaskFailed"]
           IntervalSeconds = 1
@@ -67,13 +72,15 @@ locals {
         }]
         End = true
       }
-      SupportAgent = {
+      HistorianAgent = {
         Type     = "Task"
         Resource = "arn:aws:states:::lambda:invoke"
         Parameters = {
-          "FunctionName" = var.lambda_arns["support"]
+          "FunctionName" = var.lambda_arns["historian"]
           "Payload.$"    = "$"
         }
+
+          OutputPath = "$.Payload"
         Retry = [{
           ErrorEquals    = ["States.TaskFailed"]
           IntervalSeconds = 1
@@ -87,13 +94,15 @@ locals {
         }]
         End = true
       }
-      ReturnsAgent = {
+      ScribeAgent = {
         Type     = "Task"
         Resource = "arn:aws:states:::lambda:invoke"
         Parameters = {
-          "FunctionName" = var.lambda_arns["returns"]
+          "FunctionName" = var.lambda_arns["scribe"]
           "Payload.$"    = "$"
         }
+
+          OutputPath = "$.Payload"
         Retry = [{
           ErrorEquals    = ["States.TaskFailed"]
           IntervalSeconds = 1
@@ -105,6 +114,32 @@ locals {
           ResultPath  = "$.error"
           Next       = "Failed"
         }]
+        End = true
+      }
+      PriorAuthAgent = {
+        Type     = "Task"
+        Resource = "arn:aws:states:::lambda:invoke"
+
+        Parameters = {
+          "FunctionName" = var.lambda_arns["priorauth"]
+          "Payload.$"    = "$"
+        }
+
+        OutputPath = "$.Payload"
+
+        Retry = [{
+          ErrorEquals     = ["States.TaskFailed"]
+          IntervalSeconds = 1
+          MaxAttempts     = 3
+          BackoffRate     = 2.0
+        }]
+
+        Catch = [{
+          ErrorEquals = ["States.ALL"]
+          ResultPath  = "$.error"
+          Next        = "Failed"
+        }]
+
         End = true
       }
       Failed = { Type = "Fail", Cause = "Pipeline failed" }

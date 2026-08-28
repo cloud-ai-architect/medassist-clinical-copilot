@@ -110,9 +110,19 @@ data "aws_iam_policy_document" "lambda_bedrock" {
     actions = [
       "bedrock:InvokeModel",
       "bedrock:InvokeModelWithResponseStream",
+      "bedrock:Converse",
+      "bedrock:ConverseStream",
     ]
 
+    # Calls go through cross-region inference profiles (apac.*, global.*),
+    # which are a distinct resource type from the foundation model itself --
+    # and authorisation requires BOTH: the profile that is invoked, and the
+    # models it routes to. Foundation-model ARNs also carry no account id,
+    # hence the empty account segment.
     resources = [
+      "arn:aws:bedrock:*:*:inference-profile/*",
+      "arn:aws:bedrock:*:*:application-inference-profile/*",
+      "arn:aws:bedrock:*::foundation-model/*",
       "arn:aws:bedrock:*:*:foundation-model/*",
     ]
   }

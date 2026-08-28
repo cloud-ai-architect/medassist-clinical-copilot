@@ -17,10 +17,10 @@ locals {
 
   lambdas = {
     orchestrator = "${local.name_prefix}-orchestrator"
-    sales        = "${local.name_prefix}-sales"
-    support      = "${local.name_prefix}-support"
-    returns      = "${local.name_prefix}-returns"
-    search       = "${local.name_prefix}-search"
+    triage       = "${local.name_prefix}-triage"
+    historian    = "${local.name_prefix}-historian"
+    scribe       = "${local.name_prefix}-scribe"
+    priorauth    = "${local.name_prefix}-priorauth"
     feedback     = "${local.name_prefix}-feedback"
   }
   github_oidc_arn = "arn:aws:iam::761554981898:oidc-provider/token.actions.githubusercontent.com"
@@ -149,7 +149,7 @@ module "apigateway" {
   source = "./modules/apigateway"
 
   name_prefix     = local.name_prefix
-  search_lambda   = module.lambdas.function_arns["search"]
+  search_lambda   = module.lambdas.function_arns["historian"]
   feedback_lambda = module.lambdas.function_arns["feedback"]
   common_tags     = local.common_tags
 }
