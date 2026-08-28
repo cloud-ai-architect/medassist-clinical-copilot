@@ -1,6 +1,6 @@
-aws_region                  = "ap-south-1"
+﻿aws_region                  = "ap-south-1"
 environment                 = "dev"
-project_name                = "retailpulse"
+project_name = "medassist-clinical-copilot"
 owner                       = "vijay"
 cost_center                = "portfolio"
 github_org                  = "cloud-ai-architect"
