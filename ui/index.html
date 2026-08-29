@@ -2,13 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MedAssist Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedAssist — Clinical Copilot</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header><h1>🏥 MedAssist</h1></header>
-  <main>
-    <p>Dashboard for MedAssist — see <a href="docs/architecture/00-overview.md">architecture docs</a>.</p>
+  <header class="app-header">
+    <div class="header-inner">
+      <h1><span class="mark">M</span> MedAssist <span class="sub">Clinical Copilot</span></h1>
+      <div class="header-meta">
+        <span id="env-badge" class="badge">dev</span>
+        <span id="latency" class="muted"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="banner" role="note">
+    Drafts for clinician review. Not a diagnosis and not a treatment recommendation.
+  </div>
+
+  <main class="layout">
+    <nav class="sidebar">
+      <h2>Agents</h2>
+      <button class="agent-btn active" data-agent="triage">Triage<span>urgency &amp; red flags</span></button>
+      <button class="agent-btn" data-agent="historian">Historian<span>prior chart summary</span></button>
+      <button class="agent-btn" data-agent="scribe">Scribe<span>SOAP visit note</span></button>
+      <button class="agent-btn" data-agent="priorauth">Prior Auth<span>payer justification</span></button>
+      <button class="agent-btn" data-agent="assist">Auto-route<span>orchestrator picks</span></button>
+
+      <h2>Examples</h2>
+      <div id="examples"></div>
+    </nav>
+
+    <section class="workspace">
+      <form id="agent-form" autocomplete="off">
+        <div id="fields"></div>
+        <button type="submit" id="run-btn" class="primary">Run</button>
+      </form>
+
+      <div id="output" class="output">
+        <div class="empty">
+          <h3>Select an agent and submit a case</h3>
+          <p>Each agent returns structured JSON and reports what it could not
+             determine rather than guessing.</p>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Written by Terraform with the deployed API URL. Must load before app.js. -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

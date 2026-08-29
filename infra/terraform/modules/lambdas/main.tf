@@ -99,6 +99,14 @@ resource "aws_lambda_function" "this" {
   tracing_config {
     mode = "Active"
   }
+
+  # Terraform provisions the function; application code is delivered by
+  # scripts/package_lambdas.py via update-function-code. Without this, every
+  # apply reverts the live code to the 248-byte placeholder stub -- which is
+  # exactly what happened when the API routes were rewired.
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
 }
 
 resource "aws_cloudwatch_log_group" "this" {
