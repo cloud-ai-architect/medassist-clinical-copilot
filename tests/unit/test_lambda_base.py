@@ -55,6 +55,7 @@ class TestRunStage:
     def test_model_error_maps_to_502(self):
         def boom(d):
             raise ModelError("bedrock unavailable")
+
         r = run_stage({"complaint": "x"}, ["complaint"], boom)
         assert r["statusCode"] == 502
         assert json.loads(r["body"])["error"] == "ModelError"
@@ -62,6 +63,7 @@ class TestRunStage:
     def test_unexpected_error_maps_to_500(self):
         def boom(d):
             raise RuntimeError("kaboom")
+
         r = run_stage({"complaint": "x"}, ["complaint"], boom)
         assert r["statusCode"] == 500
 
@@ -91,7 +93,9 @@ class TestInvokeJson:
 
     def test_extracts_json_from_surrounding_prose(self):
         nl = chr(10)
-        reply = "Here you go:" + nl + "```json" + nl + '{"a": 1}' + nl + "```" + nl + "Hope that helps."
+        reply = (
+            "Here you go:" + nl + "```json" + nl + '{"a": 1}' + nl + "```" + nl + "Hope that helps."
+        )
         assert StubAgent(reply).invoke_json("p") == {"a": 1}
 
     def test_no_json_raises_model_error(self):
@@ -110,5 +114,6 @@ class TestBaseAgent:
     def test_agent_without_name_is_rejected(self):
         class Nameless(BaseAgent):
             pass
+
         with pytest.raises(ValueError):
             Nameless()

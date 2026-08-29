@@ -78,10 +78,7 @@ class HistorianAgent(BaseAgent):
 
     def handle(self, chart_excerpts: list[str], presentation: str) -> dict[str, Any]:
         records = "\n\n---\n\n".join(chart_excerpts) if chart_excerpts else "(no records supplied)"
-        prompt = (
-            f"Current presentation:\n{presentation}\n\n"
-            f"Prior chart records:\n{records}"
-        )
+        prompt = f"Current presentation:\n{presentation}\n\nPrior chart records:\n{records}"
         result = self.invoke_json(prompt)
         result["disclaimer"] = DISCLAIMER
         return result
@@ -134,10 +131,7 @@ class PriorAuthAgent(BaseAgent):
     )
 
     def handle(self, service: str, clinical_record: str) -> dict[str, Any]:
-        prompt = (
-            f"Requested service:\n{service}\n\n"
-            f"Clinical record:\n{clinical_record}"
-        )
+        prompt = f"Requested service:\n{service}\n\nClinical record:\n{clinical_record}"
         result = self.invoke_json(prompt, max_tokens=3000)
         result["disclaimer"] = DISCLAIMER
         return result

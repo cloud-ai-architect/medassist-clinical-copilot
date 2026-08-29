@@ -6,12 +6,15 @@ caller with an unstructured request gets a result in one round trip.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 from src.agents.medassist import AGENTS, OrchestratorAgent
 from src.lambdas._base import run_stage
 
 # Each specialist takes different arguments; map the routed agent to the
 # fields it needs from the request payload.
-DISPATCH = {
+DISPATCH: dict[str, Callable[[dict[str, Any]], tuple[Any, ...]]] = {
     "triage": lambda d: (d.get("complaint") or d["request"], d.get("vitals")),
     "historian": lambda d: (d.get("chart_excerpts") or [], d.get("presentation") or d["request"]),
     "scribe": lambda d: (d.get("transcript") or d["request"], d.get("history")),
@@ -22,7 +25,7 @@ DISPATCH = {
 }
 
 
-def _route_and_run(data: dict) -> dict:
+def _route_and_run(data: dict[str, Any]) -> dict[str, Any]:
     decision = OrchestratorAgent().run(data["request"])
     name = decision["agent"]
     args = DISPATCH[name](data)
@@ -33,5 +36,5 @@ def _route_and_run(data: dict) -> dict:
     }
 
 
-def handler(event: dict, context: object) -> dict:
+def handler(event: dict[str, Any], context: object) -> dict[str, Any]:
     return run_stage(event, required=["request"], fn=_route_and_run)
